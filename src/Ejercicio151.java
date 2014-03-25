@@ -96,6 +96,7 @@ public class Ejercicio151 extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jPasswordField1 = new javax.swing.JPasswordField();
+        jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
@@ -144,19 +145,20 @@ public class Ejercicio151 extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
                 .addGap(22, 22, 22)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE))
                 .addGap(63, 63, 63))
         );
         jPanel1Layout.setVerticalGroup(
@@ -174,7 +176,9 @@ public class Ejercicio151 extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(77, Short.MAX_VALUE))
+                .addGap(44, 44, 44)
+                .addComponent(jLabel5)
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Login", jPanel1);
@@ -408,32 +412,40 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         Usuario nuevoUsuario = new Usuario(jTextField1.getText(), jPasswordField1.getText());
         usuarioActual.setLogin(nuevoUsuario.getLogin());
         usuarioActual.setClave(nuevoUsuario.getClave());
-        System.out.println(nuevoUsuario.Existe(nuevoUsuario.getLogin(), nuevoUsuario.getClave()));
-        jTabbedPane1.setSelectedIndex(2);
-        jTabbedPane1.setEnabledAt(0, false);
-        jTabbedPane1.setEnabledAt(1, false);
-        jTabbedPane1.setEnabledAt(2, true);
-        jTabbedPane1.setEnabledAt(3, false);
-        jMenuItem1.setEnabled(true);
-        jMenuItem4.setEnabled(true);
-        jLabel4.setText("Conectado como: " + usuarioActual.getLogin());
+        if (nuevoUsuario.Existe(nuevoUsuario.getLogin(), nuevoUsuario.getClave()) == false) {
+            jLabel5.setText("* Login o contraseña incorrectos");
+        } else {
+            System.out.println(nuevoUsuario.Existe(nuevoUsuario.getLogin(), nuevoUsuario.getClave()));
+            jTabbedPane1.setSelectedIndex(2);
+            jTabbedPane1.setEnabledAt(0, false);
+            jTabbedPane1.setEnabledAt(1, false);
+            jTabbedPane1.setEnabledAt(2, true);
+            jTabbedPane1.setEnabledAt(3, false);
+            jMenuItem1.setEnabled(true);
+            jMenuItem4.setEnabled(true);
+            jLabel5.setText("");
+            jTextField1.setText("");
+            jPasswordField1.setText("");
+            jLabel4.setText("Conectado como: " + usuarioActual.getLogin());
 
-        //Coger id del usuario actual
-        PreparedStatement buscarUsuario = Ejercicio151.connection.prepareStatement("SELECT * FROM usuarios WHERE login = ?");
-        buscarUsuario.setString(1, usuarioActual.getLogin());
-        buscarUsuario.executeQuery();
-        ResultSet rs = buscarUsuario.getResultSet();
-        if (rs.next()) {
-            usuarioActual.setId(rs.getInt("id"));
+            //Coger id del usuario actual
+            PreparedStatement buscarUsuario = Ejercicio151.connection.prepareStatement("SELECT * FROM usuarios WHERE login = ?");
+            buscarUsuario.setString(1, usuarioActual.getLogin());
+            buscarUsuario.executeQuery();
+            ResultSet rs = buscarUsuario.getResultSet();
+            if (rs.next()) {
+                usuarioActual.setId(rs.getInt("id"));
+            }
+
+            //Cargar enlaces del usuario
+            PreparedStatement enlacesU = Ejercicio151.connection.prepareStatement("SELECT * FROM enlaces WHERE idUsuario=?");
+            enlacesU.setInt(1, WIDTH);
+            enlacesU.executeQuery();
         }
-
-        //Cargar enlaces del usuario
-        PreparedStatement enlacesU = Ejercicio151.connection.prepareStatement("SELECT * FROM enlaces WHERE idUsuario=?");
-        enlacesU.setInt(1, WIDTH);
-        enlacesU.executeQuery();
     } catch (SQLException ex) {
         Logger.getLogger(Ejercicio151.class.getName()).log(Level.SEVERE, null, ex);
     }
+
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -449,6 +461,8 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     jTabbedPane1.setEnabledAt(2, true);
     jTabbedPane1.setEnabledAt(3, false);
     jMenuItem1.setEnabled(false);
+    jTextField1.setText("");
+    jPasswordField1.setText("");
     usuarioActual.setLogin("Anónimo");
     usuarioActual.setClave("");
     jLabel4.setText("Conectado como: " + usuarioActual.getLogin());
@@ -457,15 +471,19 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
     List<Enlace> enlaces = new ArrayList<Enlace>();
     List<String> etiquetas = new ArrayList<String>();
+    jTextArea1.setText("");
     Enlace nuevoEnlace = new Enlace();
 
     for (String et : jTextField7.getText().split(",")) {
         etiquetas.add(et);
-        System.out.println(et);
+        //System.out.println(et);
     }
 
-    System.out.println(nuevoEnlace.Etiquetados(etiquetas));
-    //enlaces = Enlace.Etiquetados(etiquetas);
+    //System.out.println(nuevoEnlace.Etiquetados(etiquetas));
+    enlaces = nuevoEnlace.Etiquetados(etiquetas);
+    for (Enlace enlace : enlaces) {
+        jTextArea1.append(enlace.toString());
+    }
 
 }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -550,6 +568,7 @@ private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -686,10 +705,10 @@ class Enlace {
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
     @Override
     public String toString() {
-        return url + " " + titulo + " " + comentario;
+        return titulo + ": " + url + " " + " (" + comentario + ")\n";
     }
 
     public ArrayList<Enlace> Etiquetados(List<String> etiquetas) {
@@ -697,15 +716,15 @@ class Enlace {
         ArrayList<Enlace> enlaces = new ArrayList<Enlace>();
 
         try {
-            PreparedStatement buscarId = Ejercicio151.connection.prepareStatement("SELECT idEnlace FROM etiquetas WHERE etiqueta = ?");
+            PreparedStatement buscarId = Ejercicio151.connection.prepareStatement("SELECT * FROM etiquetas WHERE etiqueta = ?");
             PreparedStatement buscarE = Ejercicio151.connection.prepareStatement("SELECT * FROM enlaces WHERE id = ?");
 
             for (String e : etiquetas) {
                 buscarId.setString(1, e);
                 buscarId.executeQuery();
                 ResultSet rs = buscarId.getResultSet();
-                if (rs.next()) {
-                    System.out.println(rs.getInt("idEnlace"));
+                while (rs.next()) {
+                    //System.out.println(rs.getInt("idEnlace"));
                     ids.add(rs.getInt("idEnlace"));
                 }
             }
@@ -721,7 +740,7 @@ class Enlace {
                     nuevoEnlace.setComentario(rs.getString("comentario"));
                     nuevoEnlace.setPrivado(rs.getBoolean("privado"));
                     if (nuevoEnlace.isPrivado() == false) {
-                        System.out.println(rs.getString("url"));
+                        //System.out.println(rs.getString("url"));
                         enlaces.add(nuevoEnlace);
                     }
                 }
