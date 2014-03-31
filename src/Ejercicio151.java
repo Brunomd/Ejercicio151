@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
 public class Ejercicio151 extends javax.swing.JFrame {
 
     static public Connection connection;
-    Usuario usuarioActual = new Usuario();
+    static public Usuario usuarioActual = new Usuario();
 
     static public void conectar() {
         connection = null;
@@ -75,7 +76,7 @@ public class Ejercicio151 extends javax.swing.JFrame {
         jTabbedPane1.setVisible(false);
         jMenuItem1.setEnabled(false);
         jMenuItem4.setEnabled(false);
-
+        jTextArea1.setEditable(false);
 
     }
 
@@ -423,6 +424,8 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             jTabbedPane1.setEnabledAt(3, false);
             jMenuItem1.setEnabled(true);
             jMenuItem4.setEnabled(true);
+            jTextArea1.setText("");
+            jTextField7.setText("");
             jLabel5.setText("");
             jTextField1.setText("");
             jPasswordField1.setText("");
@@ -461,8 +464,11 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     jTabbedPane1.setEnabledAt(2, true);
     jTabbedPane1.setEnabledAt(3, false);
     jMenuItem1.setEnabled(false);
+    jTextArea1.setText("");
+    jTextField7.setText("");
     jTextField1.setText("");
     jPasswordField1.setText("");
+    usuarioActual.setId(0);
     usuarioActual.setLogin("Anónimo");
     usuarioActual.setClave("");
     jLabel4.setText("Conectado como: " + usuarioActual.getLogin());
@@ -729,19 +735,39 @@ class Enlace {
                 }
             }
 
-            for (Integer id : ids) {
-                buscarE.setInt(1, id);
-                buscarE.executeQuery();
-                ResultSet rs = buscarE.getResultSet();
-                if (rs.next()) {
-                    Enlace nuevoEnlace = new Enlace();
-                    nuevoEnlace.setTitulo(rs.getString("titulo"));
-                    nuevoEnlace.setUrl(rs.getString("url"));
-                    nuevoEnlace.setComentario(rs.getString("comentario"));
-                    nuevoEnlace.setPrivado(rs.getBoolean("privado"));
-                    if (nuevoEnlace.isPrivado() == false) {
-                        //System.out.println(rs.getString("url"));
-                        enlaces.add(nuevoEnlace);
+            if (Ejercicio151.usuarioActual.getId() == 0) {
+
+                for (Integer id : ids) {
+                    buscarE.setInt(1, id);
+                    buscarE.executeQuery();
+                    ResultSet rs = buscarE.getResultSet();
+                    if (rs.next()) {
+                        Enlace nuevoEnlace = new Enlace();
+                        nuevoEnlace.setTitulo(rs.getString("titulo"));
+                        nuevoEnlace.setUrl(rs.getString("url"));
+                        nuevoEnlace.setComentario(rs.getString("comentario"));
+                        nuevoEnlace.setPrivado(rs.getBoolean("privado"));
+                        if (nuevoEnlace.isPrivado() == false) {
+                            //System.out.println(rs.getString("url"));
+                            enlaces.add(nuevoEnlace);
+                        }
+                    }
+                }
+            } else {
+                for (Integer id : ids) {
+                    buscarE.setInt(1, id);
+                    buscarE.executeQuery();
+                    ResultSet rs = buscarE.getResultSet();
+                    if (rs.next()) {
+                        Enlace nuevoEnlace = new Enlace();
+                        nuevoEnlace.setTitulo(rs.getString("titulo"));
+                        nuevoEnlace.setUrl(rs.getString("url"));
+                        nuevoEnlace.setComentario(rs.getString("comentario"));
+                        nuevoEnlace.setPrivado(rs.getBoolean("privado"));
+                        if (nuevoEnlace.isPrivado() == true) {
+                            //System.out.println(rs.getString("url"));
+                            enlaces.add(nuevoEnlace);
+                        }
                     }
                 }
             }
